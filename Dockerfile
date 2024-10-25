@@ -15,6 +15,6 @@ ENV NODE_ENV=${NODE_ENV}
 
 RUN if [ "$NODE_ENV" = "production" ]; then npm run build; fi
 
-EXPOSE 8080
+EXPOSE 80
 
 CMD ["npm", "start"]

@@ -1,6 +1,21 @@
 .env
 .idea
 k8s
-terraform
 node_modules
 dist
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+terraform.tfstate
+terraform.tfstate.backup
+
+# Terraform variables files
+*.tfvars
+*.tfvars.json
+
+# Terraform plugin directory
+.terraform/
+
+# Compiled files
+*.tfignore

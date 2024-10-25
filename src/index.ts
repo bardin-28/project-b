@@ -6,7 +6,7 @@ import api from "./routes/api";
 
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 80;
 
 // app.use(cors());
 
@@ -23,7 +23,7 @@ sequelize.sync().then(() => {
 });
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('Hello');
 });
 
 // Monitoring

@@ -40,3 +40,33 @@ jobs:
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/project-b:latest
+
+  terraform:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform Init
+        run: |
+          cd terraform
+          terraform init
+
+      - name: Terraform Plan
+        run: |
+          cd terraform
+          terraform plan
+
+#      - name: Terraform Apply
+#        run: |
+#          cd terraform
+#          terraform apply -auto-approve
+#        env:
+#          TF_VAR_example_variable: ${{ secrets.EXAMPLE_VAR }}
