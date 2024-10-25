@@ -10,7 +10,6 @@ const redisClient = createClient({
 redisClient.on('error', (err: any) => console.log('Redis Client Error', err));
 redisClient.on('ready', () => console.log('Redis connected'));
 
-// Функция для подключения к Redis
 async function connectRedis() {
     try {
         await redisClient.connect();
@@ -20,7 +19,6 @@ async function connectRedis() {
     }
 }
 
-// Вызываем функцию подключения
 connectRedis();
 
 export default redisClient;

@@ -7,9 +7,9 @@ COPY package*.json ./
 RUN npm cache clean --force
 RUN npm install --quiet
 
-#RUN apk update \
-#    && apk upgrade \
-#    && apk add --no-cache openssl bash curl
+RUN apk update \
+    && apk upgrade \
+    && apk add --no-cache openssl bash curl
 
 COPY . .
 
