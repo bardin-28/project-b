@@ -4,15 +4,17 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm cache clean --force
-RUN npm install --quiet
+RUN npm install --silent
 
-RUN apk update \
-    && apk upgrade \
-    && apk add --no-cache openssl bash curl
+RUN apk update && apk upgrade && apk add --no-cache openssl bash curl
 
 COPY . .
 
-EXPOSE 3000
+ARG NODE_ENV
+ENV NODE_ENV=${NODE_ENV}
 
-CMD ["npm", "run", "dev"]
+RUN if [ "$NODE_ENV" = "production" ]; then npm run build; fi
+
+EXPOSE 8080
+
+CMD ["npm", "start"]
