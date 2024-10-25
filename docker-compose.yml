@@ -37,7 +37,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
-      - '8081:80'
+      - '8081:80'  # pgAdmin доступен на порту 8081
     networks:
       - backend
     depends_on:

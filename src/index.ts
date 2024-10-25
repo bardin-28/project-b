@@ -22,6 +22,10 @@ sequelize.sync().then(() => {
     console.log('Database & tables created!');
 });
 
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
+
 // Monitoring
 app.get('/metrics', async (_, res) => {
     try {
