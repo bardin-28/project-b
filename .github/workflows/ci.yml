@@ -4,12 +4,19 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Для запуска вручную из интерфейса GitHub
+      - destroy
+  workflow_dispatch:
+    inputs:
+      destroy:
+        description: 'Destroy infrastructure'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   build:
+    if: github.ref != 'refs/heads/destroy' && !inputs.destroy
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -27,14 +34,11 @@ jobs:
 
   docker:
     needs: build
+    if: github.ref != 'refs/heads/destroy' && !inputs.destroy
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Create .env file
-        run: echo "STAGE_ENV=${{ secrets.STAGE_ENV }}" > .env
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -46,9 +50,9 @@ jobs:
         run: docker push ${{ secrets.DOCKER_USERNAME }}/project-b:latest
 
   terraform:
-    needs: build
+    needs: [build, docker]
+    if: github.ref != 'refs/heads/destroy' && !inputs.destroy
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -77,7 +81,7 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform
-          terraform plan -var="STAGE_ENV=${{ secrets.STAGE_ENV }}"
+          terraform plan
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -85,21 +89,23 @@ jobs:
       - name: Terraform Apply
         run: |
           cd terraform
-          terraform apply -auto-approve -var="STAGE_ENV=${{ secrets.STAGE_ENV }}"
+          terraform apply -auto-approve
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   destroy:
+    if: github.ref == 'refs/heads/destroy' || inputs.destroy
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.0.0
+
       - name: Terraform Init
         run: |
           cd terraform
@@ -107,15 +113,6 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Import existing Security Group
-        run: |
-          cd terraform
-          terraform import aws_security_group.vps_sg ${{ secrets.AWS_SECURITY_GROUP_ID }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
 
       - name: Terraform Destroy
         run: |
