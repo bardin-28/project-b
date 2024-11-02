@@ -64,15 +64,15 @@ jobs:
 
       - name: Create stage.tfvars file
         run: |
-          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> terraform/stage.tfvars
-          echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> terraform/stage.tfvars
-          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> terraform/stage.tfvars
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> terraform/stage.tfvars
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> terraform/stage.tfvars
-          echo "DB_USER=${{ secrets.DB_USER }}" >> terraform/stage.tfvars
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> terraform/stage.tfvars
-          echo "PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}" >> terraform/stage.tfvars
-          echo "PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}" >> terraform/stage.tfvars
+          echo "REDIS_HOST=\"${{ secrets.REDIS_HOST }}\"" >> terraform/stage.tfvars
+          echo "REDIS_PASSWORD=\"${{ secrets.REDIS_PASSWORD }}\"" >> terraform/stage.tfvars
+          echo "REDIS_PORT=\"${{ secrets.REDIS_PORT }}\"" >> terraform/stage.tfvars
+          echo "DB_HOST=\"${{ secrets.DB_HOST }}\"" >> terraform/stage.tfvars
+          echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> terraform/stage.tfvars
+          echo "DB_USER=\"${{ secrets.DB_USER }}\"" >> terraform/stage.tfvars
+          echo "DB_PASSWORD=\"${{ secrets.DB_PASSWORD }}\"" >> terraform/stage.tfvars
+          echo "PGADMIN_DEFAULT_EMAIL=\"${{ secrets.PGADMIN_DEFAULT_EMAIL }}\"" >> terraform/stage.tfvars
+          echo "PGADMIN_DEFAULT_PASSWORD=\"${{ secrets.PGADMIN_DEFAULT_PASSWORD }}\"" >> terraform/stage.tfvars
 
       - name: Terraform Init
         run: |
