@@ -73,7 +73,7 @@ jobs:
       - name: Import existing Security Group
         run: |
           cd terraform
-          terraform import aws_security_group.vps_sg ${{ secrets.AWS_SECURITY_GROUP_ID }} -var="STAGE_ENV=${{ secrets.STAGE_ENV }}
+          terraform import aws_security_group.vps_sg ${{ secrets.AWS_SECURITY_GROUP_ID }} -var="STAGE_ENV=${{ secrets.STAGE_ENV }}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -81,7 +81,7 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform
-          terraform plan -var="STAGE_ENV=${{ secrets.STAGE_ENV }}
+          terraform plan -var="STAGE_ENV=${{ secrets.STAGE_ENV }}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -89,7 +89,7 @@ jobs:
       - name: Terraform Apply
         run: |
           cd terraform
-          terraform apply -auto-approve -var="STAGE_ENV=${{ secrets.STAGE_ENV }}
+          terraform apply -auto-approve -var="STAGE_ENV=${{ secrets.STAGE_ENV }}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -117,7 +117,7 @@ jobs:
       - name: Terraform Destroy
         run: |
           cd terraform
-          terraform destroy -auto-approve -var="STAGE_ENV=${{ secrets.STAGE_ENV }}
+          terraform destroy -auto-approve -var="STAGE_ENV=${{ secrets.STAGE_ENV }}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
