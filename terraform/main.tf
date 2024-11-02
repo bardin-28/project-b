@@ -24,7 +24,19 @@ resource "aws_instance" "vps" {
     git clone https://github.com/bardin-28/project-b /home/ec2-user/project
 
     # Create .env file with environment variables
-    echo "${var.STAGE_ENV}" > /home/ec2-user/project/.env
+    cat <<EOT > /home/ec2-user/project/.env
+      NODE_ENV=production
+      PORT=80
+      REDIS_HOST=${var.REDIS_HOST}
+      REDIS_PASSWORD=${var.REDIS_PASSWORD}
+      REDIS_PORT=${var.REDIS_PORT}
+      DB_HOST=${var.DB_HOST}
+      DB_NAME=${var.DB_NAME}
+      DB_USER=${var.DB_USER}
+      DB_PASSWORD=${var.DB_PASSWORD}
+      PGADMIN_DEFAULT_EMAIL=${var.PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD=${var.PGADMIN_DEFAULT_PASSWORD}
+    EOT
 
     # Change to the project directory and start Docker Compose
     cd /home/ec2-user/project
@@ -97,11 +109,6 @@ resource "aws_security_group" "vps_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
-
-variable "STAGE_ENV" {
-  description = "Stage environment variable"
-  type        = string
 }
 
 output "instance_public_ip" {

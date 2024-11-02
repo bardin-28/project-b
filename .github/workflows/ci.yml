@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    if: github.ref != 'refs/heads/destroy' && !inputs.destroy
+    if: inputs.destroy != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -34,7 +34,7 @@ jobs:
 
   docker:
     needs: build
-    if: github.ref != 'refs/heads/destroy' && !inputs.destroy
+    if: inputs.destroy != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -51,7 +51,7 @@ jobs:
 
   terraform:
     needs: [build, docker]
-    if: github.ref != 'refs/heads/destroy' && !inputs.destroy
+    if: inputs.destroy != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -61,6 +61,18 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.0.0
+
+      - name: Create stage.tfvars file
+        run: |
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> terraform/stage.tfvars
+          echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> terraform/stage.tfvars
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> terraform/stage.tfvars
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> terraform/stage.tfvars
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> terraform/stage.tfvars
+          echo "DB_USER=${{ secrets.DB_USER }}" >> terraform/stage.tfvars
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> terraform/stage.tfvars
+          echo "PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}" >> terraform/stage.tfvars
+          echo "PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}" >> terraform/stage.tfvars
 
       - name: Terraform Init
         run: |
@@ -70,17 +82,10 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Import existing Security Group
-        run: |
-          cd terraform
-          terraform import -var="STAGE_ENV=${{ secrets.STAGE_ENV }}" aws_security_group.vps_sg ${{ secrets.AWS_SECURITY_GROUP_ID }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Terraform Plan
         run: |
           cd terraform
-          terraform plan -var="STAGE_ENV=${{ secrets.STAGE_ENV }}"
+          terraform plan -var-file="stage.tfvars"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -88,13 +93,13 @@ jobs:
       - name: Terraform Apply
         run: |
           cd terraform
-          terraform apply -auto-approve -var="STAGE_ENV=${{ secrets.STAGE_ENV }}"
+          terraform apply -auto-approve -var-file="stage.tfvars"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   destroy:
-    if: github.ref == 'refs/heads/destroy' || inputs.destroy
+    if: inputs.destroy == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -104,6 +109,18 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.0.0
+
+      - name: Create stage.tfvars file
+        run: |
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> terraform/stage.tfvars
+          echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> terraform/stage.tfvars
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> terraform/stage.tfvars
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> terraform/stage.tfvars
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> terraform/stage.tfvars
+          echo "DB_USER=${{ secrets.DB_USER }}" >> terraform/stage.tfvars
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> terraform/stage.tfvars
+          echo "PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}" >> terraform/stage.tfvars
+          echo "PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}" >> terraform/stage.tfvars
 
       - name: Terraform Init
         run: |
@@ -116,7 +133,7 @@ jobs:
       - name: Terraform Destroy
         run: |
           cd terraform
-          terraform destroy -auto-approve -var="STAGE_ENV=${{ secrets.STAGE_ENV }}"
+          terraform destroy -auto-approve -var-file="stage.tfvars"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
