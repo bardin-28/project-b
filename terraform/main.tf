@@ -24,7 +24,7 @@ resource "aws_instance" "vps" {
     git clone https://github.com/bardin-28/project-b /home/ec2-user/project
 
     # Create .env file with environment variables
-    echo "STAGE_ENV=${STAGE_ENV}" > /home/ec2-user/project/.env
+    echo "STAGE_ENV='${var.STAGE_ENV}'" > /home/ec2-user/project/.env
 
     # Change to the project directory and start Docker Compose
     cd /home/ec2-user/project
