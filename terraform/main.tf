@@ -2,6 +2,16 @@ provider "aws" {
   region = "eu-central-1"
 }
 
+variable "REDIS_HOST" {}
+variable "REDIS_PASSWORD" {}
+variable "REDIS_PORT" {}
+variable "DB_HOST" {}
+variable "DB_NAME" {}
+variable "DB_USER" {}
+variable "DB_PASSWORD" {}
+variable "PGADMIN_DEFAULT_EMAIL" {}
+variable "PGADMIN_DEFAULT_PASSWORD" {}
+
 resource "aws_instance" "vps" {
   ami           = "ami-08ec94f928cf25a9d"
   instance_type = "t2.micro"
