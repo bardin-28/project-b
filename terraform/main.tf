@@ -78,7 +78,7 @@ data "aws_security_group" "existing" {
 }
 
 resource "aws_security_group" "vps_sg" {
-  count = length(data.aws_security_group.existing.ids) == 0 ? 1 : 0
+  count = length(data.aws_security_group.existing.id) == 0 ? 1 : 0
 
   name        = "vps_sg"
   description = "Allow ports for Docker services"
