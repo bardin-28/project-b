@@ -23,9 +23,11 @@ resource "aws_instance" "vps" {
     # Clone your repository
     git clone https://github.com/bardin-28/project-b /home/ec2-user/project
 
+    # Create .env file with environment variables
+    echo "STAGE_ENV=${STAGE_ENV}" > /home/ec2-user/project/.env
+
     # Change to the project directory and start Docker Compose
     cd /home/ec2-user/project
-
     sudo docker-compose up -d
   EOF
 
@@ -95,4 +97,13 @@ resource "aws_security_group" "vps_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+variable "STAGE_ENV" {
+  description = "Stage environment variable"
+  type        = string
+}
+
+output "instance_public_ip" {
+  value = aws_instance.vps.public_ip
 }
