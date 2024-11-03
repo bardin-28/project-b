@@ -26,7 +26,7 @@ resource "aws_instance" "vps" {
   instance_type = "t2.micro"
   key_name      = "mac"
 
-  security_groups = length(aws_security_group.vps_sg) > 0 ? [aws_security_group.vps_sg[0].name] : [data.aws_security_group.existing.id]
+  security_groups = length(data.aws_security_group.existing.id) > 0 ? [data.aws_security_group.existing.id] : [aws_security_group.vps_sg[0].id]
 
   user_data = <<-EOF
     #!/bin/bash
@@ -78,7 +78,7 @@ data "aws_security_group" "existing" {
 }
 
 resource "aws_security_group" "vps_sg" {
-  count = length(data.aws_security_group.existing.id) == 0 ? 1 : 0
+  count       = length(data.aws_security_group.existing.id) == 0 ? 1 : 0
   name        = "vps_sg"
   description = "Allow ports for Docker services"
 
