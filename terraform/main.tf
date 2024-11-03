@@ -26,6 +26,8 @@ resource "aws_instance" "vps" {
   instance_type = "t2.micro"
   key_name      = "mac"
 
+  security_groups = length(aws_security_group.vps_sg) > 0 ? [aws_security_group.vps_sg[0].name] : [data.aws_security_group.existing.id]
+
   user_data = <<-EOF
     #!/bin/bash
     sudo yum update -y
@@ -65,8 +67,6 @@ resource "aws_instance" "vps" {
   tags = {
     Name = "Project-B"
   }
-
-  security_groups = [aws_security_group.vps_sg[0].name]
 }
 
 
