@@ -42,7 +42,7 @@ resource "aws_instance" "vps" {
     sudo chmod +x /usr/local/bin/docker-compose
 
     # Clone your repository
-    git clone https://github.com/bardin-28/project-b /home/ec2-user/project
+    git clone ${var.REPOSITORY_URL} /home/ec2-user/project
 
     # Create .env file with environment variables
     cat <<EOT > /home/ec2-user/project/.env

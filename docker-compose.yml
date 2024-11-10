@@ -1,10 +1,50 @@
 version: '3.9'
 
+volumes:
+  postgres-data:
+    driver: local
+  redis:
+    driver: local
+
+networks:
+  backend:
+    driver: bridge
+
 services:
+  nginx-proxy:
+    image: nginx-proxy
+    container_name: ${COMPOSE_PROJECT_NAME}-nginx
+    build:
+      context: ./docker/nginx-proxy
+      args:
+        - BASIC_AUTH=${NGINX_PROXY_BASIC_AUTH}
+        - BASIC_AUTH_USERNAME=${NGINX_PROXY_BASIC_AUTH_USERNAME}
+        - BASIC_AUTH_PASSWORD=${NGINX_PROXY_BASIC_AUTH_PASSWORD}
+        - BASIC_AUTH_HOST=${NGINX_PROXY_BASIC_AUTH_HOST}
+        - BASIC_AUTH_HOST2=${NGINX_PROXY_BASIC_AUTH_HOST2}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${NGINX_PROXY_VOLUMES}/conf:/etc/nginx/conf.d
+      - ${NGINX_PROXY_VOLUMES}/vhost:/etc/nginx/vhost.d
+      - ${NGINX_PROXY_VOLUMES}/html:/usr/share/nginx/html
+      - ${NGINX_PROXY_VOLUMES}/dhparam:/etc/nginx/dhparam
+      - ${NGINX_PROXY_VOLUMES}/certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./docker/nginx-proxy/custom.conf:/etc/nginx/conf.d/custom.conf:ro
+    networks:
+      - backend
+    restart: always
+    depends_on:
+      - backend
+
   backend:
     build: .
+    container_name: ${COMPOSE_PROJECT_NAME}-backend
+    restart: always
     ports:
-      - '80:80'
+      - '8080:8080'
     networks:
       - backend
     env_file:
@@ -17,12 +57,13 @@ services:
 
   postgres:
     image: postgres:17
+    container_name: ${COMPOSE_PROJECT_NAME}-postgres
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-#    ports:
-#      - '5432:5432'
+    ports:
+      - '5432:5432'
     networks:
       - backend
     volumes:
@@ -30,19 +71,20 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
+    container_name: ${COMPOSE_PROJECT_NAME}-postgres-admin
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
-      - '8081:8081'
+      - '5433:5433'
     networks:
       - backend
     depends_on:
       - postgres
 
   redis:
-    container_name: redis
     image: redis:latest
+    container_name: ${COMPOSE_PROJECT_NAME}-redis
     build: ./docker/redis
     ports:
       - "${REDIS_PORT}:6379"
@@ -52,31 +94,28 @@ services:
       - backend
     volumes:
       - redis:/data
+#    hostname: ${COMPOSE_PROJECT_NAME}-redis
 
   prometheus:
     image: prom/prometheus:latest
+    container_name: ${COMPOSE_PROJECT_NAME}-prometheus
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
       - '9090:9090'
+    networks:
+      - backend
 
   postgres-exporter:
     image: wrouesnel/postgres_exporter
+    container_name: ${COMPOSE_PROJECT_NAME}-postgres-exporter
     environment:
       DATA_SOURCE_NAME: "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}?sslmode=disable"
     ports:
       - '9187:9187'
     depends_on:
       - postgres
-
-volumes:
-  postgres-data:
-    driver: local
-  redis:
-    driver: local
-
-networks:
-  backend:
-    driver: bridge
+    networks:
+      - backend

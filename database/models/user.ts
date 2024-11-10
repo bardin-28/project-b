@@ -1,15 +1,64 @@
-import { DataTypes } from 'sequelize';
-import sequelize from "@/database";
+import { DataTypes } from 'sequelize'
+import sequelize from '@/database'
+import Restaurant from './restaurant'
+import Storage from './storage'
 
-const User = sequelize.define('User', {
-    username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+const User = sequelize.define(
+  'User',
+  {
     email: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-});
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    restaurantId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Restaurant,
+        key: 'id',
+      },
+    },
+    storageId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Storage,
+        key: 'id',
+      },
+    },
+  },
+  {
+    defaultScope: {
+      attributes: {
+        exclude: ['password'],
+      },
+    },
+    hooks: {
+      afterFind(users) {
+        if (Array.isArray(users)) {
+          users.forEach((user) => {
+            if (user.restaurantId === null) {
+              delete user.restaurantId
+            }
+            if (user.storageId === null) {
+              delete user.storageId
+            }
+          })
+        }
+      },
+    },
+  },
+)
 
-export default User;
+User.belongsTo(Restaurant, { foreignKey: 'restaurantId' })
+User.belongsTo(Storage, { foreignKey: 'storageId' })
+Restaurant.hasMany(User, { foreignKey: 'restaurantId' })
+Storage.hasMany(User, { foreignKey: 'storageId' })
+
+export default User
