@@ -14,7 +14,7 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm cache clean --force
-RUN npm ci
+RUN npm install
 
 
 RUN apk update && apk upgrade && apk add --no-cache openssl bash curl

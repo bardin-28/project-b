@@ -1,9 +1,12 @@
-import { DataTypes } from 'sequelize'
+import { Model, DataTypes } from 'sequelize'
 import sequelize from '@/database'
 import Restaurant from './restaurant'
 import Storage from './storage'
+import { UserInstance } from '@/src/shared/types'
 
-const User = sequelize.define(
+export type UserType = UserInstance & Model
+
+const User = sequelize.define<UserType>(
   'User',
   {
     email: {
