@@ -21,11 +21,11 @@ export const authenticateToken = async (
     const decoded: any = jwt.verify(token, ACCESS_TOKEN_SECRET)
 
     const user = (await User.findOne({
-      where: { email: decoded.email },
+      where: { id: decoded.id },
     })) as UserInstance | null
 
     if (!user) {
-      res.sendStatus(404)
+      res.sendStatus(403)
       return
     }
 

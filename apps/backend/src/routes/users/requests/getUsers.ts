@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { monitoringRequestMs } from '@/monitoring'
 import redisClient from '@/redis/client'
 import User from '@/database/models/user'
+import { authenticateToken } from '@/src/shared/middleware/authToken'
 
 const router = Router()
 
@@ -39,7 +40,7 @@ const router = Router()
  *         description: Server error.
  */
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   const end = monitoringRequestMs.startTimer()
 
   try {

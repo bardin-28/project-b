@@ -19,7 +19,7 @@ router.post(
     try {
       const newUser = await User.create({
         email: 'example@example.com',
-        password: 'securepassword',
+        password: 'password',
         role: 'admin',
         restaurantId: null,
         storageId: null,

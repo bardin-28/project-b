@@ -37,7 +37,7 @@ const User = sequelize.define<UserType>(
     },
     subscriptionRenewalDay: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     availableServices: {
       type: DataTypes.INTEGER,

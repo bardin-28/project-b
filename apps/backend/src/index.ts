@@ -19,7 +19,7 @@ app.listen(port, () => {
 })
 
 // Database
-sequelize.sync().then(() => {
+sequelize.sync({ alter: true }).then(() => {
   console.log('Database & tables created!')
 })
 

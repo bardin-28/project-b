@@ -2,10 +2,11 @@ import { Router } from 'express'
 import { monitoringRequestMs } from '@/monitoring'
 import redisClient from '@/redis/client'
 import Product from '@/database/models/product'
+import { authenticateToken } from '@/src/shared/middleware/authToken'
 
 const router = Router()
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   const end = monitoringRequestMs.startTimer()
 
   try {
