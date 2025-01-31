@@ -35,6 +35,15 @@ const User = sequelize.define<UserType>(
         key: 'id',
       },
     },
+    subscriptionRenewalDay: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    availableServices: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     defaultScope: {

@@ -4,6 +4,7 @@ import monitoringRegister from '@/monitoring'
 import cors from 'cors'
 import api from './routes/api'
 import { setupSwagger } from '@/documentation'
+import './scheduler'
 
 const app = express()
 const port = process.env.PORT || 80

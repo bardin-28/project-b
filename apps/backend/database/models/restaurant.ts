@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize'
 import sequelize from '@/database'
 
-const Storage = sequelize.define('Storage', {
+const Restaurant = sequelize.define('Restaurant', {
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -10,10 +10,6 @@ const Storage = sequelize.define('Storage', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  role: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
 })
 
-export default Storage
+export default Restaurant
