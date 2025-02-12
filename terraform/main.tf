@@ -20,6 +20,7 @@ variable "DB_USER" {}
 variable "DB_PASSWORD" {}
 variable "PGADMIN_DEFAULT_EMAIL" {}
 variable "PGADMIN_DEFAULT_PASSWORD" {}
+variable "REPOSITORY_URL" {}
 
 resource "aws_instance" "vps" {
   ami           = "ami-08ec94f928cf25a9d"
