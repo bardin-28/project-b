@@ -73,6 +73,7 @@ jobs:
           echo "DB_PASSWORD=\"${{ secrets.DB_PASSWORD }}\"" >> terraform/stage.tfvars
           echo "PGADMIN_DEFAULT_EMAIL=\"${{ secrets.PGADMIN_DEFAULT_EMAIL }}\"" >> terraform/stage.tfvars
           echo "PGADMIN_DEFAULT_PASSWORD=\"${{ secrets.PGADMIN_DEFAULT_PASSWORD }}\"" >> terraform/stage.tfvars
+          echo "REPOSITORY_URL=\"${{ secrets.REPOSITORY_URL }}\"" >> terraform/stage.tfvars
 
       - name: Terraform Init
         run: |
