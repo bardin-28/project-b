@@ -4,10 +4,8 @@ import monitoringRegister from '@/monitoring'
 import cors from 'cors'
 import api from './routes/api'
 import { setupSwagger } from '@/documentation'
-import './scheduler'
+// import './scheduler'
 // import sgMail from '@sendgrid/mail'
-
-console.info(process.env.SENDGRID_API_KEY, 'kee')
 
 const app = express()
 const port = process.env.PORT || 80
