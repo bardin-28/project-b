@@ -11,33 +11,47 @@ networks:
     driver: bridge
 
 services:
-#  nginx-proxy:
-#    image: nginx-proxy
-#    container_name: ${COMPOSE_PROJECT_NAME}-nginx
-#    build:
-#      context: ./docker/nginx-proxy
-#      args:
-#        - BASIC_AUTH=${NGINX_PROXY_BASIC_AUTH}
-#        - BASIC_AUTH_USERNAME=${NGINX_PROXY_BASIC_AUTH_USERNAME}
-#        - BASIC_AUTH_PASSWORD=${NGINX_PROXY_BASIC_AUTH_PASSWORD}
-#        - BASIC_AUTH_HOST=${NGINX_PROXY_BASIC_AUTH_HOST}
-#        - BASIC_AUTH_HOST2=${NGINX_PROXY_BASIC_AUTH_HOST2}
-#    ports:
-#      - "80:80"
-#      - "443:443"
-#    volumes:
-#      - ${NGINX_PROXY_VOLUMES}/conf:/etc/nginx/conf.d
-#      - ${NGINX_PROXY_VOLUMES}/vhost:/etc/nginx/vhost.d
-#      - ${NGINX_PROXY_VOLUMES}/html:/usr/share/nginx/html
-#      - ${NGINX_PROXY_VOLUMES}/dhparam:/etc/nginx/dhparam
-#      - ${NGINX_PROXY_VOLUMES}/certs:/etc/nginx/certs:ro
-#      - /var/run/docker.sock:/tmp/docker.sock:ro
-#      - ./docker/nginx-proxy/custom.conf:/etc/nginx/conf.d/custom.conf:ro
-#    networks:
-#      - backend
-#    restart: always
-#    depends_on:
-#      - backend
+  nginx-proxy:
+    image: nginx-proxy
+    build:
+      context: ./docker/nginx-proxy
+      args:
+        - BASIC_AUTH=${NGINX_PROXY_BASIC_AUTH}
+        - BASIC_AUTH_USERNAME=${NGINX_PROXY_BASIC_AUTH_USERNAME}
+        - BASIC_AUTH_PASSWORD=${NGINX_PROXY_BASIC_AUTH_PASSWORD}
+        - BASIC_AUTH_HOST=${NGINX_PROXY_BASIC_AUTH_HOST}
+        - BASIC_AUTH_HOST2=${NGINX_PROXY_BASIC_AUTH_HOST2}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${NGINX_PROXY_VOLUMES}/conf:/etc/nginx/conf.d
+      - ${NGINX_PROXY_VOLUMES}/vhost:/etc/nginx/vhost.d
+      - ${NGINX_PROXY_VOLUMES}/html:/usr/share/nginx/html
+      - ${NGINX_PROXY_VOLUMES}/dhparam:/etc/nginx/dhparam
+      - ${NGINX_PROXY_VOLUMES}/certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./docker/nginx-proxy/custom.conf:/etc/nginx/conf.d/custom.conf:ro
+    networks:
+      - backend
+
+    hostname: ${COMPOSE_PROJECT_NAME}-nginx-proxy
+
+  ### Nginx Proxy ACME Companion ###########################
+  acme-companion:
+    image: nginxproxy/acme-companion
+    volumes:
+      - ${NGINX_PROXY_VOLUMES}/certs:/etc/nginx/certs
+      - ${NGINX_PROXY_VOLUMES}/acme:/etc/acme.sh
+      - ${NGINX_PROXY_VOLUMES}/conf:/etc/nginx/conf.d
+      - ${NGINX_PROXY_VOLUMES}/vhost:/etc/nginx/vhost.d
+      - ${NGINX_PROXY_VOLUMES}/html:/usr/share/nginx/html
+      - ${NGINX_PROXY_VOLUMES}/dhparam:/etc/nginx/dhparam
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/nginx-proxy/custom.conf:/etc/nginx/conf.d/custom.conf:ro
+    networks:
+      - backend
+    hostname: ${COMPOSE_PROJECT_NAME}-acme-companion
 
   backend:
     build: .
@@ -94,7 +108,6 @@ services:
       - backend
     volumes:
       - redis:/data
-#    hostname: ${COMPOSE_PROJECT_NAME}-redis
 
   prometheus:
     image: prom/prometheus:latest

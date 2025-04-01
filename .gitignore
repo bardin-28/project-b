@@ -4,6 +4,8 @@ k8s
 node_modules
 dist
 .data
+*.key
+*.crt
 
 # Terraform state files
 *.tfstate

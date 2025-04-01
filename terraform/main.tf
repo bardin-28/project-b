@@ -48,6 +48,7 @@ resource "aws_instance" "vps" {
     # Create .env file with environment variables
     cat <<EOT > /home/ec2-user/project/.env
       NODE_ENV=production
+      COMPOSE_PROJECT_NAME=project-b
       PORT=80
       REDIS_HOST=${var.REDIS_HOST}
       REDIS_PASSWORD=${var.REDIS_PASSWORD}
