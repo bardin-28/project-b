@@ -34,7 +34,8 @@ services:
       - ./docker/nginx-proxy/custom.conf:/etc/nginx/conf.d/custom.conf:ro
     networks:
       - backend
-
+    depends_on:
+      - backend
     hostname: ${COMPOSE_PROJECT_NAME}-nginx-proxy
 
   ### Nginx Proxy ACME Companion ###########################
